@@ -7,6 +7,11 @@ urlpatterns = [
     # Dashboard
     path('', views.dashboard, name='dashboard'),
 
+    # Navigation tab aliases
+    path('zones/', views.dashboard, name='zones'),
+    path('movements/', views.dashboard, name='movements'),
+
+
     # Warehouse
     path('warehouses/', views.warehouses_list, name='warehouses_list'),
     path('warehouses/add/', views.warehouse_add, name='warehouse_add'),
