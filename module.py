@@ -33,3 +33,19 @@ PERMISSIONS = [
 'warehouse.add_stockmovement',
 'warehouse.manage_settings',
 ]
+
+ROLE_PERMISSIONS = {
+    "admin": ["*"],
+    "manager": [
+        "add_stockmovement",
+        "add_warehouse",
+        "change_warehouse",
+        "view_stockmovement",
+        "view_warehouse",
+    ],
+    "employee": [
+        "add_warehouse",
+        "view_stockmovement",
+        "view_warehouse",
+    ],
+}
