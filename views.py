@@ -3,6 +3,8 @@ Warehouse Management Module Views
 """
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.http import HttpResponse
+from django.urls import reverse
 from django.shortcuts import get_object_or_404, render as django_render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -112,6 +114,7 @@ def warehouses_list(request):
     }
 
 @login_required
+@htmx_view('warehouse/pages/warehouse_add.html', 'warehouse/partials/warehouse_add_content.html')
 def warehouse_add(request):
     hub_id = request.session.get('hub_id')
     if request.method == 'POST':
@@ -125,10 +128,13 @@ def warehouse_add(request):
         obj.address = address
         obj.is_active = is_active
         obj.save()
-        return _render_warehouses_list(request, hub_id)
-    return django_render(request, 'warehouse/partials/panel_warehouse_add.html', {})
+        response = HttpResponse(status=204)
+        response['HX-Redirect'] = reverse('warehouse:warehouses_list')
+        return response
+    return {}
 
 @login_required
+@htmx_view('warehouse/pages/warehouse_edit.html', 'warehouse/partials/warehouse_edit_content.html')
 def warehouse_edit(request, pk):
     hub_id = request.session.get('hub_id')
     obj = get_object_or_404(Warehouse, pk=pk, hub_id=hub_id, is_deleted=False)
@@ -139,7 +145,7 @@ def warehouse_edit(request, pk):
         obj.is_active = request.POST.get('is_active') == 'on'
         obj.save()
         return _render_warehouses_list(request, hub_id)
-    return django_render(request, 'warehouse/partials/panel_warehouse_edit.html', {'obj': obj})
+    return {'obj': obj}
 
 @login_required
 @require_POST
@@ -257,6 +263,7 @@ def stock_movements_list(request):
     }
 
 @login_required
+@htmx_view('warehouse/pages/stock_movement_add.html', 'warehouse/partials/stock_movement_add_content.html')
 def stock_movement_add(request):
     hub_id = request.session.get('hub_id')
     if request.method == 'POST':
@@ -273,9 +280,10 @@ def stock_movement_add(request):
         obj.status = status
         obj.save()
         return _render_stock_movements_list(request, hub_id)
-    return django_render(request, 'warehouse/partials/panel_stock_movement_add.html', {})
+    return {}
 
 @login_required
+@htmx_view('warehouse/pages/stock_movement_edit.html', 'warehouse/partials/stock_movement_edit_content.html')
 def stock_movement_edit(request, pk):
     hub_id = request.session.get('hub_id')
     obj = get_object_or_404(StockMovement, pk=pk, hub_id=hub_id, is_deleted=False)
@@ -287,7 +295,7 @@ def stock_movement_edit(request, pk):
         obj.status = request.POST.get('status', '').strip()
         obj.save()
         return _render_stock_movements_list(request, hub_id)
-    return django_render(request, 'warehouse/partials/panel_stock_movement_edit.html', {'obj': obj})
+    return {'obj': obj}
 
 @login_required
 @require_POST
